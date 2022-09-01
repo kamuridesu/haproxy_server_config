@@ -12,6 +12,7 @@ jobs:
       - name: Test files
         run: |
           ouptut=$(docker run --rm --name haproxy-syntax-check -v $(pwd):/usr/local/etc/haproxy haproxy haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg)
+          echo $output
           echo $output | grep "Configuration file is valid" || exit 1
 
   deploy:
