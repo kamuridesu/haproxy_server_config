@@ -6,7 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && 'refs/head/main'
     steps:
-      - name: Clone repository
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
