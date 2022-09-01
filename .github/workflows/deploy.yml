@@ -11,7 +11,7 @@ jobs:
           fetch-depth: 1
       - name: Test files
         run: |
-          ouptut=$(docker run -it --rm --name haproxy-syntax-check -v ${path}:/usr/local/etc/haproxy haproxy haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg)
+          ouptut=$(docker run -it --rm --name haproxy-syntax-check -v $(pwd):/usr/local/etc/haproxy haproxy haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg)
           echo $output | grep "Configuration file is valid" || /bin/false
 
   deploy:
