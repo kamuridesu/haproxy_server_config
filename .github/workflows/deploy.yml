@@ -26,6 +26,7 @@ jobs:
         run: ssh admin@kamuridesu.tech "cp /etc/haproxy/haproxy.cfg ./haproxy.cfg.backup"
       - name: Put files on server
         run: |
-          ssh admin@kamuridesu.tech "USERNAME=${{ secrets.USERNAME }}; PASSWORD=${{ secrets.PASSWORD }}; sudo cat ${{ github.event.repository.name }}/haproxy.cfg | sudo envsubst > /etc/haproxy/haproxy.cfg"
+          ssh admin@kamuridesu.tech "USERNAME=${{ secrets.USERNAME }}; PASSWORD=${{ secrets.PASSWORD }}; cat ${{ github.event.repository.name }}/haproxy.cfg | envsubst > /tmp/haproxy.cfg"
+          ssh admin@kamuridesu.tech "sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg"
       - name: Restart HAProxy
         run: ssh admin@kamuridesu.tech "sudo /etc/init.d/haproxy restart"
