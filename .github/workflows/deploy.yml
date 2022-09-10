@@ -1,20 +1,6 @@
 name: CD
 on: [push, workflow_dispatch]
 jobs:
-  test:
-    name: Test configuration file
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && 'refs/head/main'
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-      - name: Test files
-        run: |
-          ouptut=$(docker run --rm --name haproxy-syntax-check -v $(pwd):/usr/local/etc/haproxy haproxy haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg)
-          echo $output
-          echo $output | grep "Configuration file is valid" || exit 1
-
   deploy:
     name: Apply changes to the server
     runs-on: ubuntu-latest
@@ -34,11 +20,12 @@ jobs:
           END
         env:
             SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
-        
       - name: Clone or update repository
         run: ssh admin@kamuridesu.tech "cd ${{ github.event.repository.name }} && git pull || git clone https://github.com/${{ github.repository }}.git"
+      - name: Backup config
+        run: ssh admin@kamuridesu.tech "cp /etc/haproxy/haproxy.cfg ./haproxy.cfg.backup"
       - name: Put files on server
         run: |
           ssh admin@kamuridesu.tech "USERNAME=${{ secrets.USERNAME }}; PASSWORD=${{ secrets.PASSWORD }}; sudo cat ${{ github.event.repository.name }}/haproxy.cfg | envsubst > /etc/haproxy/haproxy.cfg"
-      - name: Restart HAproxy
-        run: sudo /etc/init.d/haproxy restart
+      - name: Restart HAProxy
+        run: ssh admin@kamuridesu.tech "sudo /etc/init.d/haproxy restart"
