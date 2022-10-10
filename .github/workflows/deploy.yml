@@ -12,7 +12,7 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/aws
           chmod 600 ~/.ssh/aws
           cat >>~/.ssh/config <<END
-          Host kamuridesu.tech
+          Host $IP_ADDR
             HostName $IP_ADDR
             User $USERNAME
             IdentityFile ~/.ssh/aws
