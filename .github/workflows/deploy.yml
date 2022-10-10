@@ -29,6 +29,6 @@ jobs:
       - name: Put files on server
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "export USERNAME=${{ secrets.USERNAME }}; export PASSWORD=${{ secrets.PASSWORD }}; cat ${{ github.event.repository.name }}/haproxy.cfg | envsubst > /tmp/haproxy.cfg"
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg"
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "echo '' >> /tmp/haproxy.cfg; sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg"
       - name: Restart HAProxy
         run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "sudo /etc/init.d/haproxy restart"
