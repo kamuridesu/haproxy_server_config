@@ -13,20 +13,22 @@ jobs:
           chmod 600 ~/.ssh/aws
           cat >>~/.ssh/config <<END
           Host kamuridesu.tech
-            HostName kamuridesu.tech
-            User admin
+            HostName $IP_ADDR
+            User $USERNAME
             IdentityFile ~/.ssh/aws
             StrictHostKeyChecking no
           END
         env:
             SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+            IP_ADDR: ${{ secrets.IP_ADDR }}
+            USERNAME: ${{ secrets.SERVER_USER }}
       - name: Clone or update repository
-        run: ssh admin@kamuridesu.tech "cd ${{ github.event.repository.name }} && git pull || git clone https://github.com/${{ github.repository }}.git"
+        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "cd ${{ github.event.repository.name }} && git pull || git clone https://github.com/${{ github.repository }}.git"
       - name: Backup config
-        run: ssh admin@kamuridesu.tech "cp /etc/haproxy/haproxy.cfg ./haproxy.cfg.backup"
+        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "cp /etc/haproxy/haproxy.cfg ./haproxy.cfg.backup"
       - name: Put files on server
         run: |
-          ssh admin@kamuridesu.tech "export USERNAME=${{ secrets.USERNAME }}; export PASSWORD=${{ secrets.PASSWORD }}; cat ${{ github.event.repository.name }}/haproxy.cfg | envsubst > /tmp/haproxy.cfg"
-          ssh admin@kamuridesu.tech "sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg"
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "export USERNAME=${{ secrets.USERNAME }}; export PASSWORD=${{ secrets.PASSWORD }}; cat ${{ github.event.repository.name }}/haproxy.cfg | envsubst > /tmp/haproxy.cfg"
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg"
       - name: Restart HAProxy
-        run: ssh admin@kamuridesu.tech "sudo /etc/init.d/haproxy restart"
+        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "sudo /etc/init.d/haproxy restart"
