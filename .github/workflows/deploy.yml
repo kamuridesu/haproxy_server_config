@@ -28,7 +28,7 @@ jobs:
         run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "cp /etc/haproxy/haproxy.cfg ./haproxy.cfg.backup"
       - name: Validate configuration
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "export USERNAME=${{ secrets.USERNAME }}; export PASSWORD=${{ secrets.PASSWORD }}; cat ${{ github.event.repository.name }}/haproxy.cfg | envsubst > /tmp/haproxy.cfg"
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "export USERNAME=${{ secrets.USERNAME }}; export PASSWORD=${{ secrets.PASSWORD }}; export BACKEND_IP_ADDR=${{ secrets.BACKEND_IP_ADDR }}; cat ${{ github.event.repository.name }}/haproxy.cfg | envsubst > /tmp/haproxy.cfg"
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "echo '' >> /tmp/haproxy.cfg; haproxy -c -f /tmp/haproxy.cfg"
       - name: Update config file
         run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.IP_ADDR }} "echo '' >> /tmp/haproxy.cfg; sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg"
